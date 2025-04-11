@@ -1,5 +1,5 @@
 # flask_station_api/app.py
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mta_api import *
 
@@ -16,26 +16,26 @@ stations_data = [
 
 letters = ['a', 'b', 'c', 'd', '1']
 
-# testData = [{
-#   "type":"Elevator",
-#   "reason":"Power Outage",
-#   "outage_date": "10/24/2006",
-#   "return_serice": "10/24/2026",
-#   "service_area": "idk"
-# }, {
-#   "type":"Elevator",
-#   "reason":"Power Outage",
-#   "outage_date": "10/24/2006",
-#   "return_serice": "10/24/2026",
-#   "service_area": "idk"
-# }]
-testData = []
-
-mta_api = mta_api()
+testData = [{
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
+}, {
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
+}]
 
 @app.route('/api/stations', methods=['GET'])
 def get_stations_A():
-    return mta_api.nearest_station(), 200
+    data = request.get_json()
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    return mta_api.nearest_station(latitude, longitude), 200
 
 @app.route('/api/lines/<string:station_name>', methods=['GET'])
 def get_station_lines(station_name):
