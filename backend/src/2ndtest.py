@@ -17,7 +17,7 @@ stations_data = [
 
 @app.route('/')
 
-def get_stations():
+def get_stations_A():
     return jsonify(stations_data)
 
 if __name__ == '__main__':

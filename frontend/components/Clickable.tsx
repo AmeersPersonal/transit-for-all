@@ -22,6 +22,28 @@ export default function Clickable({ title, accessibilityDetails, onPress }: Clic
     
 }
 
+// fetch('http://127.0.0.1:5000')
+//   .then(response => response.text())       // get the raw text
+//   .then(text => {
+//     console.log('Received from Python:', text);  // just print it
+//   })
+//   .catch(err => console.error(err));
+
+
+//fetch data from local host of the emulator
+// interface Data {
+//   message: string;
+// }
+
+// async function fetchData(): Promise<Data> {
+//   const response = await fetch('http://10.0.2.2:5000');
+//   const data: Data = await response.json();
+//   return data;
+// }
+
+// fetchData().then(data => {
+//   console.log(data.message); // Output: Hello from Python!
+// });
 const styles = StyleSheet.create({
     button: {
       margin: 4,
