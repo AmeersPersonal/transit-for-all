@@ -99,6 +99,7 @@ const InfoPage = ({ route }) => {
           ))}
         </View>
       </View>
+      {outageData.length > 0} ? 
       {outageData.map((info, index) => (
         <View style={styles.Boxes}>
           <Text style={styles.InfoHeader}>Outage</Text>
@@ -109,6 +110,10 @@ const InfoPage = ({ route }) => {
           <Text style={styles.Info}>Outage Area Affected: {info.service_area}</Text>
         </View>
       ))}
+      :
+      <View style={styles.Boxes}>
+          <Text style={styles.InfoHeader}>No Current Outages</Text>
+        </View>
     </ScrollView>
   );
 };
