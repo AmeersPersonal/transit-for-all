@@ -1,5 +1,4 @@
 
-from math import sqrt
 import re
 from urllib import response
 import requests
@@ -9,6 +8,18 @@ from google.transit import gtfs_realtime_pb2
 from google.protobuf import json_format, text_format, message
 import time
 import pandas as pd
+
+
+
+from math import radians, sin, cos, sqrt, atan2
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371  # Earth radius in km
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
 
 class mta_api():
 
@@ -89,7 +100,7 @@ class mta_api():
         location = requests.get(f"http://api.ipstack.com/{ip}?access_key={self.ipstack}").json()
         lat = location["latitude"]
         lon =location["longitude"]
-        return lon, lat
+        return lat, lon
                      
     def get_station_coordinate(self, stop_id):
         f= pd.read_csv("backend/src/mta_info/stops.txt")
@@ -179,28 +190,54 @@ class mta_api():
         return stop_info[["stop_id", "stop_name"]].to_dict(orient="records")
 
 
+
+    # def nearest_station(self):
+    #     f = pd.read_csv("backend/src/mta_info/stops.txt")
+    #     user_lat, user_lon = self.get_user_coordinate()
+    #     stations = []
+        
+    #     for _, row in f.iterrows():
+    #         stop_lat = row["stop_lat"]
+    #         stop_lon = row["stop_lon"]
+    #         stop_id = row["stop_id"]
+    #         distance = haversine(user_lat, user_lon, stop_lat, stop_lon)
+            
+    #         stations.append({
+    #             "stop_id": stop_id,
+    #             "stop_name": row["stop_name"],
+    #             "distance": distance
+    #         })
+
+    #     sorted_data = sorted(stations, key=lambda s: s["distance"])
+
+    #     for station in sorted_data[:-5]:
+    #         print(f'{station["stop_name"]} - {station["distance"]:.2f} km')
+
+    #     # return sorted_data[:5]  # top 5 nearest stations
+
+
+        
+
+
     def nearest_station(self):
         f = pd.read_csv("backend/src/mta_info/stops.txt")
-        user_coords = self.get_user_coordinate()
-        x= user_coords[0]
-        y= user_coords[1]
-        stations =[]
+        user_lat, user_lon = self.get_user_coordinate()
+        stations = []
         
-        for index, row in f.iterrows():
-            lat = row["stop_lat"]
-            lon = row["stop_lon"]
+        for _, row in f.iterrows():
+            stop_lat = row["stop_lat"]
+            stop_lon = row["stop_lon"]
             stop_id = row["stop_id"]
-            distance= sqrt(((x-lon)**2 +(y-lat)**2))
+  
+            lat = (user_lat -(stop_lat))**2
+            lon =(user_lon-(stop_lon))**2
+            distance = sqrt(lat+lon)
+            
             stations.append({
-                "stop_id":stop_id,
-                "distance":distance
+                "stop_id": stop_id,
+                "stop_name": row["stop_name"],
+                "distance": distance
             })
-        
-        sorted_data= sorted(stations, key= lambda x:["distance"])
-        return sorted_data
-         
-        
 
-        
-
-
+        sorted_data = sorted(stations, key=lambda s: s["distance"])
+        return sorted_data[:5]  # top 5 nearest stations
