@@ -1,5 +1,4 @@
 
-from enum import unique
 import re
 from urllib import response
 import requests
@@ -158,7 +157,7 @@ class mta_api():
             lat = (user_lat -(stop_lat))**2
             lon =(user_lon-(stop_lon))**2
             distance = sqrt(lat+lon)
-
+            
             stations.append({
                 "stop_id": stop_id,
                 "stop_name": row["stop_name"],
@@ -166,19 +165,24 @@ class mta_api():
             })
 
         sorted_data = sorted(stations, key=lambda s: s["distance"])
+        return sorted_data  # top 5 nearest stations
 
-        seen = set()
-        unique_stations = []
-        for station in stations:
-            # Define your criteria for duplicates here
-            key = (station['name'], round(station['latitude'], 6), round(station['longitude'], 6))
-            
-            if key not in seen:
-                seen.add(key)
-                unique_stations.append(station)
-        sorted_data = sorted(unique_stations, key=lambda s: s["distance"])
-        return sorted_data
-    
+def remove_duplicates(stations):
+    seen = set()
+    unique_stations = []
+
+    for station in stations:
+        key = (
+            station['name'].strip().lower(),
+            round(station['latitude'], 6),
+            round(station['longitude'], 6)
+        )
+
+        if key not in seen:
+            seen.add(key)
+            unique_stations.append(station)
+
+    return unique_stations
 
     def is_station_accessible(self, station_name):
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
@@ -189,19 +193,6 @@ class mta_api():
                 continue
             if outage["outagedate"] is not None:
                 return False
-            
-        return True
-    
-    def accessible(self, station_name):
-        url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
-        response  = requests.get(url)
-        data = response.json()
-        print(data)
-        for outage in data:
-            if outage["station"] != station_name:
-                continue
-            if outage["outagedate"] is not None:
-                pass
             
         return True
     
