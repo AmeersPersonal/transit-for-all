@@ -62,7 +62,7 @@ const InfoPage = ({ route }) => {
           const lineJson: string[] = await lineResponse.json();
           setLineData(lineJson);
 
-          const outageResponse = await fetch(`http://10.0.2.2:5000/api/outages/${station_id}`);
+          const outageResponse = await fetch(`http://10.0.2.2:5000/api/outages/${station_name}`);
   
           if (!outageResponse.ok) {
             throw new Error(`HTTP error! status: ${outageResponse.status}`);
