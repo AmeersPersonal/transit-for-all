@@ -57,7 +57,7 @@ def get_outages(station_name):
     station_name_spaces = unquote(station_name)
     # TODO Retrieve the Outages on each station
     print(mta.accessible(station_name_spaces))
-    return mta.accessible(station_name_spaces), 200
+    return mta.stations_down_equpiment(station_name_spaces), 200
 
 #TODO determine and provide additional routes
 if __name__ == '__main__':

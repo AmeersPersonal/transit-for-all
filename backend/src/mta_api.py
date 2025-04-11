@@ -238,8 +238,8 @@ class mta_api():
         for equipment in data:
             if equipment["station"] != station_name:
                 continue
-            if equipment["ououtagedate"] is None:
-                return equipment_outages
+            # if equipment["outagedate"] is not None:
+            #     return equipment_outages
             
             if equipment["equipmenttype"]== "ES":
                 equipment_type= "Escalator"
