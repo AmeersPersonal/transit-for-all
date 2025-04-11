@@ -73,6 +73,18 @@ class mta_api():
             return stop_id
         else:
             return      
+        
+    def long_name_to_id(Seld, name):
+        ids =[]
+        f= pd.read_csv("backend/src/mta_info/stops.txt")
+        result = f[f["stop_name"] == name]
+        if not result.empty:
+            stop_id = result.iloc[0]["stop_id"]
+            if stop_id not in ids:
+                ids.append(stop_id)
+        else:
+            return  ids
+        return ids         
 
 
     def get_train_line_data(self, line):
@@ -252,7 +264,7 @@ class mta_api():
                     return True
         return False
    
-    def station_lines(self, stop_id):
+    def station_lines(self, stop_ids):
 
         train_lines = [
         '1', '2', '3', '4', '5', '6', '7',  # IRT lines
@@ -268,7 +280,7 @@ class mta_api():
             for t in train:
                 for update in t.trip_update.stop_time_update:
                    
-                    if update.stop_id == stop_id:
+                    if update.stop_id in stop_ids:
                         
                         if t.trip_update.trip.route_id not in station_trains:
                             station_trains.append(t.trip_update.trip.route_id)
