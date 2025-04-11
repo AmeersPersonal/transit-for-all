@@ -192,6 +192,7 @@ class mta_api():
             
         return True
     
+    
     def stations_down_equpiment(self, station_name):
         equipment_outages = []
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
