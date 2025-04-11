@@ -32,7 +32,10 @@ testData = [{
 
 @app.route('/api/stations', methods=['GET'])
 def get_stations_A():
-    return mta_api.nearest_station(), 200
+    data = request.get_json()
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    return mta_api.nearest_station(latitude, longitude), 200
 
 @app.route('/api/lines/<string:station_name>', methods=['GET'])
 def get_station_lines(station_name):
