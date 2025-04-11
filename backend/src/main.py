@@ -7,8 +7,9 @@ def main():
     # print(mta.long_name_to_id("Howard Beach-JFK Airport"))
     # print(mta.station_lines( "G05N"))4
     # print(mta.station_train_info("G05N"))
-    print(mta.remove_duplicates(mta.nearest_station(40.76955871435315, -73.98221834841239)))
+    # print(mta.remove_duplicates(mta.nearest_station(40.76955871435315, -73.98221834841239)))
     #"59 St-Columbus Circle",
+    print(mta.accessible("Howard Beach-JFK Airport"))
 
 if __name__ == "__main__":
     main()  

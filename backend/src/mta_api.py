@@ -216,13 +216,16 @@ class mta_api():
         }
         for outage in data:
             if outage["station"] != station:
-                return
+                return [elevator, escalator]
             if outage["outagedate"] is not None:
                 if outage["equipmenttype"] == "ES":
                     escalator["outage"]==True
                 if outage["equipmenttype"] == "EL":
                     elevator["outage"]==True
-        return [escalator, elevator]
+        t = []
+        t.append(escalator)
+        t.append(elevator)
+        return elevator
 
     
     def stations_down_equpiment(self, station_name):
