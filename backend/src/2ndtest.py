@@ -1,6 +1,8 @@
 # flask_station_api/app.py
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from mta_api import *
+
 app = Flask(__name__)
 CORS(app)  # Allow mobile and web apps to access this server
 
@@ -28,17 +30,9 @@ testData = [{
   "service_area": "idk"
 }]
 
-@app.route("/", methods=['POSTS'])
-def store_location():
-    data = request.get_json()
-    latitude = data.get('latitude')
-    longitude = data.get('longitude')
-    return(latitude, longitude)
-
-
 @app.route('/api/stations', methods=['GET'])
 def get_stations_A():
-    return jsonify(stations_data), 200
+    return mta_api.nearest_station(), 200
 
 @app.route('/api/lines/<string:station_name>', methods=['GET'])
 def get_station_lines(station_name):
