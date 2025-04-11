@@ -192,6 +192,18 @@ class mta_api():
             
         return True
     
+    def accessible(self, station_name):
+        url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
+        response  = requests.get(url)
+        data = response.json()
+        print(data)
+        for outage in data:
+            if outage["station"] != station_name:
+                continue
+            if outage["outagedate"] is not None:
+                pass
+            
+        return True
     
     def stations_down_equpiment(self, station_name):
         equipment_outages = []
