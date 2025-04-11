@@ -3,3 +3,4 @@ requests
 protobuf
 python-dotenv
 flask  
+pandas
