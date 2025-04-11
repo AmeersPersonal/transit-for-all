@@ -1,4 +1,5 @@
 
+from math import sqrt
 import re
 from urllib import response
 import requests
@@ -88,7 +89,7 @@ class mta_api():
         location = requests.get(f"http://api.ipstack.com/{ip}?access_key={self.ipstack}").json()
         lat = location["latitude"]
         lon =location["longitude"]
-        return (lat. lon)
+        return lon, lat
                      
     def get_station_coordinate(self, stop_id):
         f= pd.read_csv("backend/src/mta_info/stops.txt")
@@ -178,7 +179,28 @@ class mta_api():
         return stop_info[["stop_id", "stop_name"]].to_dict(orient="records")
 
 
-    def nearest_station(self, user_coords):
-        pass
+    def nearest_station(self):
+        f = pd.read_csv("backend/src/mta_info/stops.txt")
+        user_coords = self.get_user_coordinate()
+        x= user_coords[0]
+        y= user_coords[1]
+        stations =[]
+        
+        for index, row in f.iterrows():
+            lat = row["stop_lat"]
+            lon = row["stop_lon"]
+            stop_id = row["stop_id"]
+            distance= sqrt(((x-lon)**2 +(y-lat)**2))
+            stations.append({
+                "stop_id":stop_id,
+                "distance":distance
+            })
+        
+        sorted_data= sorted(stations, key= lambda x:["distance"])
+        return sorted_data
+         
+        
+
+        
 
 
