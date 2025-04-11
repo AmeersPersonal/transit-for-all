@@ -13,19 +13,35 @@ stations_data = [
     {"name": "Canal St", "elevator": False, "escalator": False}
 ]
 
+letters = ['a', 'b', 'c', 'd', '1']
+
+testData = [{
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
+}, {
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
+}]
+
 @app.route('/api/stations', methods=['GET'])
 def get_stations_A():
     return jsonify(stations_data), 200
 
 @app.route('/api/lines/<string:station_name>', methods=['GET'])
 def get_station_lines(station_name):
-    # TODO Retrieve the Lines on each station
-    return jsonify({'error': 'Station not found'}), 404
+    # TODO Retrieve the Lines from this station
+    return jsonify(letters), 200
 
 @app.route('/api/outages/<string:station_name>', methods=['GET'])
-def get_station_lines(station_name):
+def get_outages(station_name):
     # TODO Retrieve the Outages on each station
-    return jsonify({'error': 'Station not found'}), 404
+    return jsonify(testData), 200
 
 #TODO determine and provide additional routes
 if __name__ == '__main__':

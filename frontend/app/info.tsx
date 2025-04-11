@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
 import E from "../assets/images/icon.png";
+import { useEffect, useState } from 'react';
 
 // import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated';
 const images = {
@@ -27,35 +28,70 @@ const images = {
   'q': require('../assets/images/q.png'),
   'r': require('../assets/images/r.png'),
   's': require('../assets/images/s.png'),
+  'sir': require('../assets/images/sir.png')
   'w': require('../assets/images/w.png'),
   'z': require('../assets/images/z.png'),
 };
 
-
-const letters = ['a', 'b', 'c', 'd', '1']
-
-const testData = [{
-  "type":"Elevator",
-  "reason":"Power Outage",
-  "outage_date": "10/24/2006",
-  "return_serice": "10/24/2026",
-  "service_area": "idk"
-}, {
-  "type":"Elevator",
-  "reason":"Power Outage",
-  "outage_date": "10/24/2006",
-  "return_serice": "10/24/2026",
-  "service_area": "idk"
-}]
+interface OutageData {
+  "type":string,
+  "reason":string,
+  "outage_date":string,
+  "return_serice":string,
+  "service_area":string,
+}
 
 const InfoPage = ({ route }) => {
+    const [lineData, setLineData] = useState<string[]>([]);
+    const [outageData, setOutageData] = useState<OutageData[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const lineResponse = await fetch('http://10.0.2.2:5000/api/lines/stationA');
+  
+          if (!lineResponse.ok) {
+            throw new Error(`HTTP error! status: ${lineResponse.status}`);
+          }
+  
+          const lineJson: string[] = await lineResponse.json();
+          setLineData(lineJson);
+
+          const outageResponse = await fetch('http://10.0.2.2:5000/api/outages/stationA');
+  
+          if (!outageResponse.ok) {
+            throw new Error(`HTTP error! status: ${outageResponse.status}`);
+          }
+  
+          const outageJson: OutageData[] = await outageResponse.json();
+          setOutageData(outageJson);
+        } catch (e: any) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, []);
+  
+    if (loading) {
+      return <View><Text>Loading...</Text></View>;
+    }
+  
+    if (error) {
+      return <View><Text>Error: {error}</Text></View>;
+    }
+
   const { stationName } = route.params;
   return (
     <ScrollView>
       <View style={styles.Boxes}>
         <Text style={styles.Header}> {stationName}</Text>
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          {letters.map((letter, index) => (
+          {lineData.map((letter, index) => (
             <Image style={styles.Lines}
             key={index}
             source={images[letter]}
@@ -63,7 +99,7 @@ const InfoPage = ({ route }) => {
           ))}
         </View>
       </View>
-      {testData.map((info, index) => (
+      {outageData.map((info, index) => (
         <View style={styles.Boxes}>
           <Text style={styles.InfoHeader}>Outage</Text>
           <Text style={styles.Info}>Type: {info.type}</Text>

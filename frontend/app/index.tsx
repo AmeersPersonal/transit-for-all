@@ -18,7 +18,7 @@ const HomePage = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://10.0.2.2:5000/stations');
+        const response = await fetch('http://10.0.2.2:5000/api/stations');
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
