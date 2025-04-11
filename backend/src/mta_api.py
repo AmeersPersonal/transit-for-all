@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
 from google.protobuf import json_format, text_format, message
-import time
+import time 
 import pandas as pd
 
 
@@ -14,13 +14,6 @@ from geopy.geocoders import Nominatim
 
 from math import radians, sin, cos, sqrt, atan2
 
-def haversine(lat1, lon1, lat2, lon2):
-    R = 6371  # Earth radius in km
-    dlat = radians(lat2 - lat1)
-    dlon = radians(lon2 - lon1)
-    a = sin(dlat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return R * c
 
 class mta_api():
 
@@ -225,8 +218,8 @@ class mta_api():
                     return True
         return False
    
-    def station_lines(self, station_name):
-        
+    def station_lines(self, stop_id):
+
         train_lines = [
         '1', '2', '3', '4', '5', '6', '7',  # IRT lines
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'M', # IND lines
@@ -234,11 +227,53 @@ class mta_api():
         'S',  # Shuttles
         'SIR' #Staten Island Railway
         ]
-        # station_trains = []
-        # for l in train_lines:
-        #     train = self.get_train_line_data(l)
-        #     for t in train:
-        #         if tr
+        station_trains = []
+        for l in train_lines:
+            train = self.get_train_line_data(l)
+           
+            for t in train:
+                for update in t.trip_update.stop_time_update:
+                   
+                    if update.stop_id == stop_id:
+                        
+                        if t.trip_update.trip.route_id not in station_trains:
+                            station_trains.append(t.trip_update.trip.route_id)
+                       
+
+        return station_trains
+                        
+ 
+    def station_train_info(self, stop_id): 
+        train_info = []
+        train_line = self.station_lines(stop_id)
+        
+        for t in train_line:
+            info = self.get_train_line_data(t)
+            
+            for i in info:
+                if not i.HasField("trip_update"):
+                    continue
+
+                for update in i.trip_update.stop_time_update:
+                    if update.stop_id == stop_id:
+                        arrival_time = update.arrival.time if update.HasField("arrival") else None
+                        current_time = int(time.time())
+                        t = max((arrival_time - current_time) // 60, 0)
+                        train_info.append({
+                            "route": t,
+                            "arrival_time": t
+                        })
+                        break  # Stop after finding one matching stop_id in this trip
+
+                if any(train['route'] == t for train in train_info):
+                    break  # Stop checking more trips once we've added info for this line
+
+        return train_info
+
+
+
+    
+        
 
 
        
