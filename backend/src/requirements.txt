@@ -4,3 +4,4 @@ protobuf
 python-dotenv
 flask  
 pandas
+geopy

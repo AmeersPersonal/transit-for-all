@@ -10,6 +10,7 @@ import time
 import pandas as pd
 
 
+from geopy.geocoders import Nominatim
 
 from math import radians, sin, cos, sqrt, atan2
 
@@ -35,72 +36,20 @@ class mta_api():
             "1234567S": os.environ.get("num_1234567S"),
             "SIR": os.environ.get("SIR")
         }
-        self.ipstack = os.environ.get("ipstack")
+        
         self.sessions =requests.Session()
 
     
-    # def get_train_long_name(self, train)->dict:
-    #     f = pd.read_csv("backend/src/mta_info/routes.txt")
-        
-    #     # Filter the dataframe for the specific train
-    #     result = f[f["route_short_name"] == train]
-        
-    #     if not result.empty:
-    #         route_id = result.iloc[0]["route_long_name"]
-    #         return {train: route_id}
-    #     else:
-    #         return {}
-
-    # def get_train_trip(self, train)->dict:
-    #     f = pd.read_csv("backend/src/mta_info/routes.txt")
-        
-    #     # Filter the dataframe for the specific train
-    #     result = f[f["route_short_name"] == train]
-        
-    #     if not result.empty:
-    #         route_id = result.iloc[0]["route_long_name"]
-    #         return {train: route_id}
-    #     else:
-    #         return {}
-           
-
-    # def get_train_stop_id(self, train)->dict:
-        
-    #     return{}
-        
-
     
-    # def get_train(self)->str:
-    #     return
-    # def get_door(self)->int:
-    #     return
-    
-    # def get_cart(self)->int:
-    #     return
-    
-    # def get_station(self)->str:
-    #     return
-    
-    # def is_train_accessible_at_station(self)->bool:
-    #     return
-    
-    # def elvators_down_at_station(self, station):
-    #     return
-    # def alternate_accessible_rourtes(self)->list[dict]:
-    #     return
-    
-    # def spefic_line_data(self)->str:
-    #     return
-
-    # def is_train_delay(self, train)->bool:
-    #     return
-
     def get_user_coordinate(self):
-        ip = requests.get('https://api.ipify.org').text
-        location = requests.get(f"http://api.ipstack.com/{ip}?access_key={self.ipstack}").json()
-        lat = location["latitude"]
-        lon =location["longitude"]
-        return lat, lon
+        geolocator = Nominatim(user_agent="my_app")
+        location = geolocator.geocode("") # Empty string gets the current location
+
+        if location:
+            print("Latitude:", location.latitude)
+            print("Longitude:", location.longitude)
+        else:
+            print("Location not found")
                      
     def get_station_coordinate(self, stop_id):
         f= pd.read_csv("backend/src/mta_info/stops.txt")
@@ -122,7 +71,15 @@ class mta_api():
             return stop_name
         else:
             return 
+    def long_name_to_id(self, name):
+        f= pd.read_csv("backend/src/mta_info/stops.txt")
+        result = f[f["stop_name"] == name]
         
+        if not result.empty:
+            stop_id = result.iloc[0]["stop_id"]
+            return stop_id
+        else:
+            return      
 
 
     def get_train_line_data(self, line):
@@ -138,8 +95,9 @@ class mta_api():
         for entity in feed.entity:
             if entity.HasField("trip_update"):
                 route_id= entity.trip_update.trip.route_id
-                if route_id == "R":
+                if route_id == line:
                     data.append(entity)
+                
         return data
 
 
@@ -190,36 +148,10 @@ class mta_api():
         return stop_info[["stop_id", "stop_name"]].to_dict(orient="records")
 
 
-
-    # def nearest_station(self):
-    #     f = pd.read_csv("backend/src/mta_info/stops.txt")
-    #     user_lat, user_lon = self.get_user_coordinate()
-    #     stations = []
-        
-    #     for _, row in f.iterrows():
-    #         stop_lat = row["stop_lat"]
-    #         stop_lon = row["stop_lon"]
-    #         stop_id = row["stop_id"]
-    #         distance = haversine(user_lat, user_lon, stop_lat, stop_lon)
-            
-    #         stations.append({
-    #             "stop_id": stop_id,
-    #             "stop_name": row["stop_name"],
-    #             "distance": distance
-    #         })
-
-    #     sorted_data = sorted(stations, key=lambda s: s["distance"])
-
-    #     for station in sorted_data[:-5]:
-    #         print(f'{station["stop_name"]} - {station["distance"]:.2f} km')
-
-    #     # return sorted_data[:5]  # top 5 nearest stations
-
-
         
 
 
-    def nearest_station(self):
+    def nearest_station(self, user_lat, user_lon):
         f = pd.read_csv("backend/src/mta_info/stops.txt")
         user_lat, user_lon = self.get_user_coordinate()
         stations = []
@@ -241,3 +173,79 @@ class mta_api():
 
         sorted_data = sorted(stations, key=lambda s: s["distance"])
         return sorted_data[:5]  # top 5 nearest stations
+
+    def is_station_accessible(self, station_name):
+        url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
+        response  = requests.get(url)
+        data = response.json()
+        for outage in data:
+            if outage["station"] != station_name:
+                continue
+            if outage["outagedate"] is not None:
+                return False
+            
+        return True
+    
+    def stations_down_equpiment(self, station_name):
+        equipment_outages = []
+        url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
+        response  = requests.get(url)
+        data = response.json()
+        equipment_type=''
+
+        for equipment in data:
+            if equipment["station"] != station_name:
+                continue
+            if equipment["ououtagedate"] is None:
+                return equipment_outages
+            
+            if equipment["equipmenttype"]== "ES":
+                equipment_type= "Escalator"
+            elif equipment["equipmenttype"]=="EL":
+                equipment_type= "Elevator"
+            equipment_outages.append({
+                "type":equipment_type,
+                "reason":equipment["reason"],
+                "outage_date": equipment["outagedate"],
+                "return_serice": equipment["estimatedreturntoservice"],
+                "service_area": equipment["serving"]
+                
+            })
+        return equipment_outages
+    
+    def train_delay(self,station_name, line):
+        id = self.long_name_to_id(station_name)
+        line_data = self.get_train_line_data(line)
+        for line in line_data:
+            if line.HasField("trip_update"):
+                print(line.trip_update.stop_time_update)
+                schedule = line.trip_update.stop_time_update.arrival.time
+                arival = line.trip_update.stop_time_update.departure.time
+                if arival - schedule > 120:
+                    return True
+        return False
+   
+    def station_lines(self, station_name):
+        
+        train_lines = [
+        '1', '2', '3', '4', '5', '6', '7',  # IRT lines
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'M', # IND lines
+        'J', 'L', 'N', 'Q', 'R', 'W', 'Z',   # BMT lines
+        'S',  # Shuttles
+        'SIR' #Staten Island Railway
+        ]
+        # station_trains = []
+        # for l in train_lines:
+        #     train = self.get_train_line_data(l)
+        #     for t in train:
+        #         if tr
+
+
+       
+
+
+            
+
+
+
+        
