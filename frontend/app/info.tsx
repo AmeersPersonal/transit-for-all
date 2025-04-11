@@ -28,7 +28,7 @@ const images = {
   'q': require('../assets/images/q.png'),
   'r': require('../assets/images/r.png'),
   's': require('../assets/images/s.png'),
-  'sir': require('../assets/images/sir.png')
+  'sir': require('../assets/images/sir.png'),
   'w': require('../assets/images/w.png'),
   'z': require('../assets/images/z.png'),
 };
