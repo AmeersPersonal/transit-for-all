@@ -73,6 +73,18 @@ class mta_api():
             return stop_id
         else:
             return      
+        
+    def long_name_to_id(Seld, name):
+        ids =[]
+        f= pd.read_csv("backend/src/mta_info/stops.txt")
+        result = f[f["stop_name"] == name]
+        if not result.empty:
+            stop_id = result.iloc[0]["stop_id"]
+            if stop_id not in ids:
+                ids.append(stop_id)
+        else:
+            return  ids
+        return ids         
 
 
     def get_train_line_data(self, line):
@@ -204,13 +216,16 @@ class mta_api():
         }
         for outage in data:
             if outage["station"] != station:
-                return
+                return [elevator, escalator]
             if outage["outagedate"] is not None:
                 if outage["equipmenttype"] == "ES":
                     escalator["outage"]==True
                 if outage["equipmenttype"] == "EL":
                     elevator["outage"]==True
-        return [escalator, elevator]
+        t = []
+        t.append(escalator)
+        t.append(elevator)
+        return elevator
 
     
     def stations_down_equpiment(self, station_name):
@@ -218,13 +233,13 @@ class mta_api():
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
         response  = requests.get(url)
         data = response.json()
-        equipment_type=''
+        equipment_type=[]
 
         for equipment in data:
             if equipment["station"] != station_name:
                 continue
-            if equipment["ououtagedate"] is None:
-                return equipment_outages
+            # if equipment["outagedate"] is not None:
+            #     return equipment_outages
             
             if equipment["equipmenttype"]== "ES":
                 equipment_type= "Escalator"
@@ -252,7 +267,7 @@ class mta_api():
                     return True
         return False
    
-    def station_lines(self, stop_id):
+    def station_lines(self, stop_ids):
 
         train_lines = [
         '1', '2', '3', '4', '5', '6', '7',  # IRT lines
@@ -268,7 +283,7 @@ class mta_api():
             for t in train:
                 for update in t.trip_update.stop_time_update:
                    
-                    if update.stop_id == stop_id:
+                    if update.stop_id in stop_ids:
                         
                         if t.trip_update.trip.route_id not in station_trains:
                             station_trains.append(t.trip_update.trip.route_id)

@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mta_api import *
+from urllib.parse import unquote
 
 app = Flask(__name__)
 CORS(app)  # Allow mobile and web apps to access this server
@@ -53,8 +54,10 @@ def get_station_lines(station_id):
 
 @app.route('/api/outages/<string:station_name>', methods=['GET'])
 def get_outages(station_name):
+    station_name_spaces = unquote(station_name)
     # TODO Retrieve the Outages on each station
-    return jsonify(testData), 200
+    print(mta.accessible(station_name_spaces))
+    return mta.stations_down_equpiment(station_name_spaces), 200
 
 #TODO determine and provide additional routes
 if __name__ == '__main__':
