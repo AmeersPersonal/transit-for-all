@@ -1,4 +1,5 @@
 
+from enum import unique
 import re
 from urllib import response
 import requests
@@ -146,7 +147,7 @@ class mta_api():
 
     def nearest_station(self, user_lat, user_lon):
         f = pd.read_csv("backend/src/mta_info/stops.txt")
-        user_lat, user_lon = self.get_user_coordinate()
+        
         stations = []
         
         for _, row in f.iterrows():
@@ -157,7 +158,7 @@ class mta_api():
             lat = (user_lat -(stop_lat))**2
             lon =(user_lon-(stop_lon))**2
             distance = sqrt(lat+lon)
-            
+
             stations.append({
                 "stop_id": stop_id,
                 "stop_name": row["stop_name"],
@@ -165,7 +166,19 @@ class mta_api():
             })
 
         sorted_data = sorted(stations, key=lambda s: s["distance"])
-        return sorted_data[:5]  # top 5 nearest stations
+
+        seen = set()
+        unique_stations = []
+        for station in stations:
+            # Define your criteria for duplicates here
+            key = (station['name'], round(station['latitude'], 6), round(station['longitude'], 6))
+            
+            if key not in seen:
+                seen.add(key)
+                unique_stations.append(station)
+        sorted_data = sorted(unique_stations, key=lambda s: s["distance"])
+        return sorted_data
+    
 
     def is_station_accessible(self, station_name):
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
