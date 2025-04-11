@@ -1,16 +1,21 @@
+import { ScrollView } from 'react-native';
 import Clickable from '@/components/Clickable';
 
-const FlatListBasics = () => {
-  return (
-    <>
-      <Clickable title="StationA" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes', 'Info: Yes']} onPress={() => alert('Button pressed!')}/>
-      <Clickable title="StationB" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes', 'Info: Yes']} onPress={() => alert('Button pressed!')}/>
-      <Clickable title="StationC" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes', 'Info: Yes']} onPress={() => alert('Button pressed!')}/>
-      <Clickable title="StationD" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes', 'Info: Yes']} onPress={() => alert('Button pressed!')}/>
-      <Clickable title="StationD" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes', 'Info: Yes']} onPress={() => alert('BUtton Pressed')}/>
-    </>
+const stations = ['59 St Columbus Circle', 'StationB', 'StationC', 'StationD'];
 
+const HomePage = ({ navigation }) => {
+  return (
+    <ScrollView>
+      {stations.map((station) => (
+        <Clickable
+          key={station}
+          title={station}
+          accessibilityDetails={['Elevators: Yes', 'Escalators: Yes']}
+          onPress={() => navigation.navigate('StationDetails', { stationName: station })}
+        />
+      ))}
+    </ScrollView>
   );
 };
 
-export default FlatListBasics;
+export default HomePage;
