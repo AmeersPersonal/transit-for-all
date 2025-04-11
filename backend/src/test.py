@@ -2,8 +2,7 @@ from flask import Flask
 
 #initiallizing flask
 
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
 
 @app.route("/")
 
