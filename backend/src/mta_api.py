@@ -190,6 +190,29 @@ class mta_api():
             
         return True
     
+    def accessible(self, station):
+        url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
+        response  = requests.get(url)
+        data = response.json()
+        elevator= {
+            "equipment": "elevator",
+            "outage":False
+        }
+        escalator= {
+            "equipment": "escalator",
+            "outage":False
+        }
+        for outage in data:
+            if outage["station"] != station:
+                return
+            if outage["outagedate"] is not None:
+                if outage["equipmenttype"] == "ES":
+                    escalator["outage"]==True
+                if outage["equipmenttype"] == "EL":
+                    elevator["outage"]==True
+        return [escalator, elevator]
+
+    
     def stations_down_equpiment(self, station_name):
         equipment_outages = []
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
