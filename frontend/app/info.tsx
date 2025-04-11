@@ -1,15 +1,26 @@
-import { Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+// import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated';
 
-const infoPage = () => {
+const InfoPage = ({ route }) => {
+  const { stationName } = route.params;
   return (
-    <Text> Hello World!</Text>
+    <ScrollView>
+      <View style={styles.Boxes}>
+        <Text style={styles.Header}> {stationName}</Text>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    button: {
+    Header: {
+      fontSize: 32,
+      color: '#000000',
+      fontWeight: '600',
+    },
+    Boxes: {
       margin: 4,
-      backgroundColor: '#1E90FF',
+      backgroundColor: '#FFFFFF',
       paddingVertical: 12,
       paddingHorizontal: 24,
       borderRadius: 8,
@@ -20,27 +31,6 @@ const styles = StyleSheet.create({
       shadowRadius: 4,
       elevation: 3,
     },
-    row: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
-    },
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 32,
-      fontWeight: '600',
-    },
-    detailsContainer: {
-      flexDirection: 'column',
-      gap: 8, // works if you're using React Native 0.71+
-    },
-    infoText: {
-      color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
-      marginLeft: 8,
-    },
   });
 
-export default infoPage;
+export default InfoPage;

@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       color: '#FFFFFF',
-      fontSize: 32,
+      fontSize: 24,
       fontWeight: '600',
     },
     detailsContainer: {
