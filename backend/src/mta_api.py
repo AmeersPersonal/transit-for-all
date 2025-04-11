@@ -233,7 +233,7 @@ class mta_api():
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
         response  = requests.get(url)
         data = response.json()
-        equipment_type=''
+        equipment_type=[]
 
         for equipment in data:
             if equipment["station"] != station_name:
