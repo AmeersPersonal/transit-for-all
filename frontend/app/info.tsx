@@ -35,7 +35,17 @@ const images = {
 const letters = ['a', 'b', 'c', 'd', '1']
 
 const testData = [{
-  
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
+}, {
+  "type":"Elevator",
+  "reason":"Power Outage",
+  "outage_date": "10/24/2006",
+  "return_serice": "10/24/2026",
+  "service_area": "idk"
 }]
 
 const InfoPage = ({ route }) => {
@@ -53,9 +63,16 @@ const InfoPage = ({ route }) => {
           ))}
         </View>
       </View>
-      <View style={styles.Boxes}>
-
-      </View>
+      {testData.map((info, index) => (
+        <View style={styles.Boxes}>
+          <Text style={styles.InfoHeader}>Outage</Text>
+          <Text style={styles.Info}>Type: {info.type}</Text>
+          <Text style={styles.Info}>Date Outage Started: {info.outage_date}</Text>
+          <Text style={styles.Info}>Estimated Outage Fix: {info.return_serice}</Text>
+          <Text style={styles.Info}>Outage Reason: {info.reason}</Text>
+          <Text style={styles.Info}>Outage Area Affected: {info.service_area}</Text>
+        </View>
+      ))}
     </ScrollView>
   );
 };
@@ -66,6 +83,19 @@ const styles = StyleSheet.create({
       color: '#000000',
       fontWeight: '600',
       marginBottom: 12
+    },
+    InfoHeader: {
+      fontSize: 32,
+      color: '#000000',
+      fontWeight: '600',
+      marginBottom: 12,
+    },
+    Info: {
+      fontSize: 20,
+      color: '#000000',
+      fontWeight: '600',
+      marginBottom: 6,
+      flexShrink: 1
     },
     Boxes: {
       margin: 4,
