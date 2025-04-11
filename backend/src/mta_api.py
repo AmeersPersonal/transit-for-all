@@ -23,64 +23,83 @@ class mta_api():
             "1234567S": os.environ.get("num_1234567S"),
             "SIR": os.environ.get("SIR")
         }
+        self.ipstack = os.environ.get("ipstack")
         self.sessions =requests.Session()
 
     
-    def get_train_long_name(self, train)->dict:
-        f = pd.read_csv("backend/src/mta_info/routes.txt")
+    # def get_train_long_name(self, train)->dict:
+    #     f = pd.read_csv("backend/src/mta_info/routes.txt")
         
-        # Filter the dataframe for the specific train
-        result = f[f["route_short_name"] == train]
+    #     # Filter the dataframe for the specific train
+    #     result = f[f["route_short_name"] == train]
         
-        if not result.empty:
-            route_id = result.iloc[0]["route_long_name"]
-            return {train: route_id}
-        else:
-            return {}
+    #     if not result.empty:
+    #         route_id = result.iloc[0]["route_long_name"]
+    #         return {train: route_id}
+    #     else:
+    #         return {}
 
-    def get_train_trip(self, train)->dict:
-        f = pd.read_csv("backend/src/mta_info/routes.txt")
+    # def get_train_trip(self, train)->dict:
+    #     f = pd.read_csv("backend/src/mta_info/routes.txt")
         
-        # Filter the dataframe for the specific train
-        result = f[f["route_short_name"] == train]
+    #     # Filter the dataframe for the specific train
+    #     result = f[f["route_short_name"] == train]
         
-        if not result.empty:
-            route_id = result.iloc[0]["route_long_name"]
-            return {train: route_id}
-        else:
-            return {}
+    #     if not result.empty:
+    #         route_id = result.iloc[0]["route_long_name"]
+    #         return {train: route_id}
+    #     else:
+    #         return {}
            
 
-    def get_train_stop_id(self, train)->dict:
+    # def get_train_stop_id(self, train)->dict:
         
-        return{}
+    #     return{}
         
 
     
-    def get_train(self)->str:
-        return
-    def get_door(self)->int:
-        return
+    # def get_train(self)->str:
+    #     return
+    # def get_door(self)->int:
+    #     return
     
-    def get_cart(self)->int:
-        return
+    # def get_cart(self)->int:
+    #     return
     
-    def get_station(self)->str:
-        return
+    # def get_station(self)->str:
+    #     return
     
-    def is_train_accessible_at_station(self)->bool:
-        return
+    # def is_train_accessible_at_station(self)->bool:
+    #     return
     
-    def elvators_down_at_station(self, station):
-        return
-    def alternate_accessible_rourtes(self)->list[dict]:
-        return
+    # def elvators_down_at_station(self, station):
+    #     return
+    # def alternate_accessible_rourtes(self)->list[dict]:
+    #     return
     
-    def spefic_line_data(self)->str:
-        return
+    # def spefic_line_data(self)->str:
+    #     return
 
-    def is_train_delay(self, train)->bool:
-        return
+    # def is_train_delay(self, train)->bool:
+    #     return
+
+    def get_user_coordinate(self):
+        ip = requests.get('https://api.ipify.org').text
+        location = requests.get(f"http://api.ipstack.com/{ip}?access_key={self.ipstack}").json()
+        lat = location["latitude"]
+        lon =location["longitude"]
+        return (lat. lon)
+                     
+    def get_station_coordinate(self, stop_id):
+        f= pd.read_csv("backend/src/mta_info/stops.txt")
+        result = f[f["stop_id"] == stop_id]
+        if not result.empty:
+            lat = result.iloc[0]["stop_lat"]
+            lon = result.iloc[0]["stop_lon"]
+
+            return (float(lat), float(lon))
+        else:
+            return 
 
     def stop_id_to_long_name(self, stop_id):
         f= pd.read_csv("backend/src/mta_info/stops.txt")
@@ -94,9 +113,11 @@ class mta_api():
         
 
 
-    def test(self):
+    def get_train_line_data(self, line):
         feed = gtfs_realtime_pb2.FeedMessage()
-        response = self.sessions.get(self.feeds.get("NQRW"))
+        key = next((k for k, v in self.feeds.items() if line in k), None)
+        data = []
+        response = self.sessions.get(self.feeds.get(key))
 
         if response.status_code != 200:
             raise Exception(f"Failed to get GTFS data: {response.status_code} - {response.text}")
@@ -106,8 +127,8 @@ class mta_api():
             if entity.HasField("trip_update"):
                 route_id= entity.trip_update.trip.route_id
                 if route_id == "R":
-                    continue
-        return feed
+                    data.append(entity)
+        return data
 
 
        
@@ -117,14 +138,14 @@ class mta_api():
     # Load GTFS files
     
 
-    def get_train_stops(self, train_short_name="N"):
+    def get_train_stops(self, train_short_name):
         routes = pd.read_csv("backend/src/mta_info/routes.txt")
         trips = pd.read_csv("backend/src/mta_info/trips.txt")
         stop_times = pd.read_csv("backend/src/mta_info/stop_times.txt")
         stops = pd.read_csv("backend/src/mta_info/stops.txt")
         # 1. Get route_id for the N train
         route_ids = routes[routes["route_short_name"] == train_short_name]["route_id"]
-        print(route_ids)
+    
         if route_ids.empty:
             return []
 
@@ -156,8 +177,8 @@ class mta_api():
 
         return stop_info[["stop_id", "stop_name"]].to_dict(orient="records")
 
-    # 🔍 Example usage:
 
-
+    def nearest_station(self, user_coords):
+        pass
 
 
