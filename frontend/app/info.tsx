@@ -42,6 +42,9 @@ interface OutageData {
 }
 
 const InfoPage = ({ route }) => {
+    const { station_id, station_name } = route.params;
+
+
     const [lineData, setLineData] = useState<string[]>([]);
     const [outageData, setOutageData] = useState<OutageData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -50,7 +53,7 @@ const InfoPage = ({ route }) => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const lineResponse = await fetch('http://10.0.2.2:5000/api/lines/stationA');
+          const lineResponse = await fetch(`http://10.0.2.2:5000/api/lines/A24N`);
   
           if (!lineResponse.ok) {
             throw new Error(`HTTP error! status: ${lineResponse.status}`);
@@ -59,7 +62,7 @@ const InfoPage = ({ route }) => {
           const lineJson: string[] = await lineResponse.json();
           setLineData(lineJson);
 
-          const outageResponse = await fetch('http://10.0.2.2:5000/api/outages/stationA');
+          const outageResponse = await fetch(`http://10.0.2.2:5000/api/outages/${station_id}`);
   
           if (!outageResponse.ok) {
             throw new Error(`HTTP error! status: ${outageResponse.status}`);
@@ -85,16 +88,15 @@ const InfoPage = ({ route }) => {
       return <View><Text>Error: {error}</Text></View>;
     }
 
-  const { stationName } = route.params;
   return (
     <ScrollView>
       <View style={styles.Boxes}>
-        <Text style={styles.Header}> {stationName}</Text>
+        <Text style={styles.Header}> {station_name}</Text>
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           {lineData.map((letter, index) => (
             <Image style={styles.Lines}
             key={index}
-            source={images[letter]}
+            source={images[letter.toLowerCase()]}
             />
           ))}
         </View>

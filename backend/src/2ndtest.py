@@ -39,16 +39,17 @@ def get_stations_A():
         # latitude = data.get('latitude')
         # longitude = data.get('longitude')
     # Code that might raise an exception
-        print(mta.remove_duplicates(mta.nearest_station(40.76955871435315, -73.98221834841239))[:5])
         return mta.remove_duplicates(mta.nearest_station(40.76955871435315, -73.98221834841239))[:5], 200
     except Exception as e:
     # Catch any other exception
         print(f"An unexpected error occurred: {e}")
     return jsonify(""), 404
-@app.route('/api/lines/<string:station_name>', methods=['GET'])
-def get_station_lines(station_name):
+@app.route('/api/lines/<string:station_id>', methods=['GET'])
+def get_station_lines(station_id):
+    print(station_id)
     # TODO Retrieve the Lines from this station
-    return jsonify(letters), 200
+    print(mta.station_lines(station_id))
+    return mta.station_lines(station_id), 200
 
 @app.route('/api/outages/<string:station_name>', methods=['GET'])
 def get_outages(station_name):

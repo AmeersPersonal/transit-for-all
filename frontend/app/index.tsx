@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { ScrollView, View, Text } from 'react-native';
 import Clickable from '@/components/Clickable';
+import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
 const stations = ['59 St Columbus Circle', 'StationB', 'StationC', 'StationD'];
 
 interface DataType {
-  name: string;
+  stop_id: string;
+  stop_name: string;
+  distance: Double;
   elevator: boolean;
   escalator: boolean;
 }
@@ -48,13 +51,13 @@ const HomePage = ({ navigation }) => {
     <ScrollView>
       {data.map((station) => (
         <Clickable
-          key={station.name}
-          title={station.name}
+          key={station.stop_id}
+          title={station.stop_name}
           accessibilityDetails={[
             `Elevators: ${station.elevator ? 'Yes' : 'No'}`,
             `Escalators: ${station.escalator ? 'Yes' : 'No'}`,
           ]} 
-          onPress={() => navigation.navigate('StationDetails', { stationName: station.name })}
+          onPress={() => navigation.navigate('StationDetails', { station_id: station.stop_id, station_name: station.stop_name })}
         />
       ))}
     </ScrollView>
