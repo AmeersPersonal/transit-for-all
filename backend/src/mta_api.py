@@ -167,22 +167,16 @@ class mta_api():
         sorted_data = sorted(stations, key=lambda s: s["distance"])
         return sorted_data  # top 5 nearest stations
 
-def remove_duplicates(stations):
-    seen = set()
-    unique_stations = []
+    def remove_duplicates(self, stations):
+        seen = set()
+        unique_stations = []
 
-    for station in stations:
-        key = (
-            station['name'].strip().lower(),
-            round(station['latitude'], 6),
-            round(station['longitude'], 6)
-        )
+        for station in stations:
+            if (station['stop_name'] not in seen):
+                unique_stations.append(station)
+                seen.add(station['stop_name'])
 
-        if key not in seen:
-            seen.add(key)
-            unique_stations.append(station)
-
-    return unique_stations
+        return unique_stations
 
     def is_station_accessible(self, station_name):
         url ="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fnyct_ene.json"
