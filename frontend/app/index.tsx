@@ -1,13 +1,20 @@
 import { ScrollView } from 'react-native';
 import Clickable from '@/components/Clickable';
 
+const stations = ['59 St Columbus Circle', 'StationB', 'StationC', 'StationD'];
+
 const HomePage = ({ navigation }) => {
   return (
     <ScrollView>
-      <Clickable title="StationA" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes']} onPress={() => navigation.navigate('StationDetails', { stationName: 'StationA' })}r/>
-      <Clickable title="StationB" accessibilityDetails={['Elevators: Yes', 'Escalators: Yes']} onPress={() => alert('Button pressed!')}/>
+      {stations.map((station) => (
+        <Clickable
+          key={station}
+          title={station}
+          accessibilityDetails={['Elevators: Yes', 'Escalators: Yes']}
+          onPress={() => navigation.navigate('StationDetails', { stationName: station })}
+        />
+      ))}
     </ScrollView>
-
   );
 };
 
