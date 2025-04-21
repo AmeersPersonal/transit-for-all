@@ -1,5 +1,4 @@
 import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
-import E from "../assets/images/icon.png";
 import { useEffect, useState } from 'react';
 
 // import { ScrollView } from 'react-native-reanimated/lib/typescript/Animated';
@@ -53,7 +52,7 @@ const InfoPage = ({ route }) => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const lineResponse = await fetch(`http://10.0.2.2:5000/api/lines/A24N`);
+          const lineResponse = await fetch(`http://10.0.2.2:5000/api/lines/${station_name}`);
   
           if (!lineResponse.ok) {
             throw new Error(`HTTP error! status: ${lineResponse.status}`);

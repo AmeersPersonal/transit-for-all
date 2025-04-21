@@ -45,12 +45,12 @@ def get_stations_A():
     # Catch any other exception
         print(f"An unexpected error occurred: {e}")
     return jsonify(""), 404
-@app.route('/api/lines/<string:station_id>', methods=['GET'])
-def get_station_lines(station_id):
-    print(station_id)
+@app.route('/api/lines/<string:station_name>', methods=['GET'])
+def get_station_lines(station_name):
+    print(station_name)
     # TODO Retrieve the Lines from this station
-    print(mta.station_lines(station_id))
-    return mta.station_lines(station_id), 200
+    print(mta.station_lines(station_name))
+    return mta.station_lines(mta.long_name_to_ids(station_name)), 200
 
 @app.route('/api/outages/<string:station_name>', methods=['GET'])
 def get_outages(station_name):

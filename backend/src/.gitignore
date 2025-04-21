@@ -1,1 +1,2 @@
-/backend/src/.env
+.env
+__pycache__

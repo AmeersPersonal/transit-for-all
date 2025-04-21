@@ -1,1 +1,6 @@
-\bakcend\src\.env
+.idea
+.venv
+.vscode
+
+/backend/src/__pycache__
+/backend/src/.env

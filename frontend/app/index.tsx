@@ -21,23 +21,27 @@ const HomePage = ({ navigation }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://10.0.2.2:5000/api/stations');
+        const stationResponse = await fetch('http://10.0.2.2:5000/api/stations');
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!stationResponse.ok) {
+          throw new Error(`HTTP error! status: ${stationResponse.status}`);
         }
 
-        const json: DataType[] = await response.json();
-        setData(json);
+        const stationJson: DataType[] = await stationResponse.json();
+        setData(stationJson);
+
+        
       } catch (e: any) {
         setError(e.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
+
   }, []);
+
+  
 
   if (loading) {
     return <View><Text>Loading...</Text></View>;
@@ -54,8 +58,6 @@ const HomePage = ({ navigation }) => {
           key={station.stop_id}
           title={station.stop_name}
           accessibilityDetails={[
-            `Elevators: ${station.elevator ? 'Yes' : 'No'}`,
-            `Escalators: ${station.escalator ? 'Yes' : 'No'}`,
           ]} 
           onPress={() => navigation.navigate('StationDetails', { station_id: station.stop_id, station_name: station.stop_name })}
         />

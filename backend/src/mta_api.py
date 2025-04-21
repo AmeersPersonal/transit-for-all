@@ -74,7 +74,7 @@ class mta_api():
         else:
             return      
         
-    def long_name_to_id(Seld, name):
+    def long_name_to_ids(self, name):
         ids =[]
         f= pd.read_csv("backend/src/mta_info/stops.txt")
         result = f[f["stop_name"] == name]
