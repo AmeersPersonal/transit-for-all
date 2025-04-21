@@ -9,7 +9,9 @@ def main():
     # print(mta.station_train_info("G05N"))
     # print(mta.remove_duplicates(mta.nearest_station(40.76955871435315, -73.98221834841239)))
     #"59 St-Columbus Circle",
-    print(mta.accessible("Howard Beach-JFK Airport"))
+    ids = mta.long_name_to_ids("59 St-Columbus Circle")
+    # print(ids)
+    print(mta.station_train_info(ids))
 
 if __name__ == "__main__":
     main()  

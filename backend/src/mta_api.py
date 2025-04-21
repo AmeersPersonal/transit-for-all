@@ -75,16 +75,15 @@ class mta_api():
             return      
         
     def long_name_to_ids(self, name):
-        ids =[]
-        f= pd.read_csv("backend/src/mta_info/stops.txt")
-        result = f[f["stop_name"] == name]
-        if not result.empty:
-            stop_id = result.iloc[0]["stop_id"]
-            if stop_id not in ids:
-                ids.append(stop_id)
-        else:
-            return  ids
-        return ids         
+        f = pd.read_csv("backend/src/mta_info/stops.txt")
+
+        # Filter all rows where stop_name matches (case-insensitive for flexibility)
+        result = f[f["stop_name"].str.lower() == name.lower()]
+
+        # Get all unique stop_ids associated with that stop name
+        ids = result["stop_id"].unique().tolist()
+
+        return ids        
 
 
     def get_train_line_data(self, line):
@@ -292,10 +291,16 @@ class mta_api():
         return station_trains
                         
  
-    def station_train_info(self, stop_id): 
+    def station_train_info(self, stop_ids): 
         train_info = []
-        train_line = self.station_lines(stop_id)
-        
+        train_line = []
+        for id in stop_ids:
+            t= self.station_lines(stop_ids)
+            for i in t:
+                if i not in train_line:
+                    train_line.append(i)
+        print(train_line)
+
         for t in train_line:
             info = self.get_train_line_data(t)
             
@@ -304,7 +309,7 @@ class mta_api():
                     continue
 
                 for update in i.trip_update.stop_time_update:
-                    if update.stop_id == stop_id:
+                    if update.stop_id in stop_ids:
                         arrival_time = update.arrival.time if update.HasField("arrival") else None
                         current_time = int(time.time())
                         t = max((arrival_time - current_time) // 60, 0)
